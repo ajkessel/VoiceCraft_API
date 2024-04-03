@@ -1,4 +1,92 @@
-# VoiceCraft: Zero-Shot Speech Editing and Text-to-Speech in the Wild
+
+# VoiceCraft API Quick Start Guide
+
+The VoiceCraft API is a FastAPI application designed to extend the VoiceCraft text-to-speech (TTS) model with a convenient interface for generating speech audio from text. This guide provides an overview of the API, how to install, run it, and an example of how to use it. It was made for [Pandrator](https://github.com/lukaszliniewicz/Pandrator). 
+
+## API Overview
+
+The API endpoint `/generate` accepts POST requests with several parameters for customizing the TTS generation process:
+
+- **time**: The cut-off time in the audio sample (how much of the sample is to be used for voice cloning, recommended between 3 and 9 (required).
+- **target_text**: The text you wish to generate speech for (required).
+- **audio**: The input audio file in WAV format (16000khz) which will be used to clone the voice (required).
+- **transcript**: The full transcript of the input audio file, named as the wav file (required).
+- **save_to_file**: Whether to save the generated audio to a file (default `True`).
+- **output_path**: The directory where the output audio file should be saved (default `.`).
+- Additional parameters for fine-tuning the generation (`top_k`, `top_p`, `temperature`, `stop_repetition`, `kvcache`, `sample_batch_size`, `device`).
+
+The response will either be a JSON containing a message and the output file path (if `save_to_file` is `True`) or a streaming response with the generated audio (if `save_to_file` is `False`).
+
+## Trying Out the API
+
+After starting the API server, you can explore and test the API using the Swagger UI by navigating to `http://127.0.0.1:8245/docs` in your browser. This interface allows you to easily send requests to the API and view responses.
+
+## Example Implementation
+
+Below is an example Python script demonstrating how to send a request to the API:
+
+```python
+import requests
+
+url = 'http://127.0.0.1:8245/generate'
+files = {
+    'audio': open('path/to/your/audio.wav', 'rb'),
+    'transcript': open('path/to/your/transcript.txt', 'rb')
+}
+data = {
+    'time': 5.0,
+    'target_text': 'Your additional text here.',
+    'save_to_file': True,
+    'output_path': './generated_audios',
+    # Add other form fields as needed
+}
+
+response = requests.post(url, files=files, data=data)
+print(response.json())
+```
+
+## Installation and Running
+
+1. Clone the VoiceCraft API repository:
+   ```
+   git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
+   ```
+2. Change into the repository directory:
+   ```
+   cd VoiceCraft_API
+   ```
+3. Create a conda environment named `voicecraft_api`:
+   ```
+   conda create -n voicecraft_api python=3.9.16
+   ```
+4. Activate the environment:
+   ```
+   conda activate voicecraft_api
+   ```
+5. Install the requirements:
+   ```
+   pip install -r requirements.txt
+   ```
+6. Follow these steps to install VoiceCraft and dependencies:
+   ```
+   pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
+   conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
+   conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=5.5.1068
+   mfa model download dictionary english_us_arpa
+   mfa model download acoustic english_us_arpa
+   ```
+7. Install `ffmpeg` as per your OS instructions.
+8. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in your repository to make it compatible with Windows:
+   - Replace `src/audiocraft/audiocraft/utils/cluster.py` with `audiocraft_windows/audiocraft/utils/cluster.py`
+   - Replace `src/audiocraft/audiocraft/environment.py` with `audiocraft_windows/audiocraft/environment.py`
+   - Replace `src/audiocraft/audiocraft/utils/checkpoint.py` with `audiocraft_windows/audiocraft/utils/checkpoint.py`
+
+## Additional Notes
+
+- The API automatically performs audio-text alignment if not already performed for the given WAV/TXT pair and prepends the correct portion of the transcript to the prompt. It created a folder for each "voice" with the wav/txt pair and the alignment csv.
+- Users can simply send the text they want to generate, and the rest is handled automatically.
+
+# The original readme: VoiceCraft: Zero-Shot Speech Editing and Text-to-Speech in the Wild
 [Demo](https://jasonppy.github.io/VoiceCraft_web) [Paper](https://jasonppy.github.io/assets/pdfs/VoiceCraft.pdf)
 
 
