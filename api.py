@@ -41,7 +41,7 @@ async def generate_audio(
     os.environ['USER'] = 'PC'
 
     # Set the os variable for espeak
-    os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = 'C:\\Program Files\\eSpeak NG\\libespeak-ng.dll'
+    os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = './espeak/libespeak-ng.dll'
 
     # Create the voice folder
     voice_folder = f"./voices/{os.path.splitext(audio.filename)[0]}"
