@@ -11,6 +11,15 @@ from pydantic import BaseModel
 import io
 from starlette.responses import StreamingResponse
 import getpass
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    handlers=[
+                        logging.FileHandler('api.log'),
+                        logging.StreamHandler()
+                    ])
 
 app = FastAPI()
 
@@ -38,19 +47,23 @@ async def generate_audio(
     sample_batch_size: int = Form(4),
     device: str = Form(None)
 ):
+    logging.info("Received request to generate audio")
 
     # Get the current username
     username = getpass.getuser()
 
     # Set the USER environment variable to the username
     os.environ['USER'] = username
+    logging.debug(f"Set USER environment variable to: {username}")
 
     # Set the os variable for espeak
     os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = './espeak/libespeak-ng.dll'
+    logging.debug("Set PHONEMIZER_ESPEAK_LIBRARY environment variable")
 
     # Create the voice folder
     voice_folder = f"./voices/{os.path.splitext(audio.filename)[0]}"
     os.makedirs(voice_folder, exist_ok=True)
+    logging.debug(f"Created voice folder: {voice_folder}")
 
     # Save the uploaded files
     audio_fn = os.path.join(voice_folder, audio.filename)
@@ -59,14 +72,19 @@ async def generate_audio(
         shutil.copyfileobj(audio.file, f)
     with open(transcript_fn, "wb") as f:
         shutil.copyfileobj(transcript.file, f)
+    logging.debug(f"Saved uploaded files: {audio_fn}, {transcript_fn}")
 
     # Prepare alignment if not already done
     mfa_folder = os.path.join(voice_folder, "mfa")
     os.makedirs(mfa_folder, exist_ok=True)
     alignment_file = os.path.join(mfa_folder, f"{os.path.splitext(audio.filename)[0]}.csv")
     if not os.path.isfile(alignment_file):
+        logging.info("Preparing alignment...")
         subprocess.run(["mfa", "align", "-v", "--clean", "-j", "1", "--output_format", "csv",
                         voice_folder, "english_us_arpa", "english_us_arpa", mfa_folder])
+        logging.info("Alignment completed")
+    else:
+        logging.info("Alignment file already exists. Skipping alignment.")
 
     # Read the alignment file and find the closest end time
     cut_off_sec = time
@@ -82,17 +100,17 @@ async def generate_audio(
             closest_end = end
             prompt_end_word = label
 
-    print(f"Identified end value closest to desired time: {closest_end} seconds")
+    logging.info(f"Identified end value closest to desired time: {closest_end} seconds")
 
     if not prompt_end_word:
-        print("No suitable word found within the desired time frame.")
+        logging.error("No suitable word found within the desired time frame.")
         return {"message": "No suitable word found within the desired time frame."}
 
     # Read the transcript file and extract the prompt
     with open(transcript_fn, "r") as f:
         transcript_text = f.read().strip()
 
-    print(f"Reading transcript file: {transcript_fn}")
+    logging.debug(f"Reading transcript file: {transcript_fn}")
 
     transcript_words = transcript_text.split()
     prompt_end_idx = -1
@@ -102,25 +120,25 @@ async def generate_audio(
             break
 
     if prompt_end_idx == -1:
-        print("Error: Prompt end word not found in the transcript.")
+        logging.error("Error: Prompt end word not found in the transcript.")
         return {"message": "Error: Prompt end word not found in the transcript."}
 
     prompt_transcript = " ".join(transcript_words[:prompt_end_idx+1])
 
-    print(f"Prompt transcript up to closest end word: {prompt_transcript}")
+    logging.info(f"Prompt transcript up to closest end word: {prompt_transcript}")
 
     # Prepend the extracted transcript to the user's prompt
     final_prompt = prompt_transcript + " " + target_text
-    print(f"Final prompt to be used: {final_prompt}")
+    logging.info(f"Final prompt to be used: {final_prompt}")
 
     # Set the device
     if device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
     elif device.lower() not in ["cpu", "cuda"]:
-        print("Invalid device specified. Defaulting to CPU.")
+        logging.warning("Invalid device specified. Defaulting to CPU.")
         device = "cpu"
 
-    print(f"Using device: {device}")
+    logging.info(f"Using device: {device}")
 
     # Set up the model and tokenizers
     voicecraft_name = "giga330M.pth"
@@ -158,21 +176,25 @@ async def generate_audio(
 
     # Calculate prompt_end_frame based on the actual closest end time
     prompt_end_frame = int(closest_end * 16000)
-    print(f"Prompt end frame: {prompt_end_frame}")
+    logging.info(f"Prompt end frame: {prompt_end_frame}")
 
-    print("Calling inference_one_sample...")
-    # Generate the audio
-    concated_audio, gen_audio = inference_one_sample(
-        model, ckpt["config"], phn2num, text_tokenizer, audio_tokenizer,
-        audio_fn, final_prompt, device, decode_config, prompt_end_frame
-    )
-    print("Inference completed.")
+    logging.info("Calling inference_one_sample...")
+    try:
+        # Generate the audio
+        concated_audio, gen_audio = inference_one_sample(
+            model, ckpt["config"], phn2num, text_tokenizer, audio_tokenizer,
+            audio_fn, final_prompt, device, decode_config, prompt_end_frame
+        )
+        logging.info("Inference completed.")
+    except Exception as e:
+        logging.error(f"Error occurred during inference: {str(e)}")
+        return {"message": "An error occurred during audio generation."}
 
     if save_to_file:
         # Save the generated audio to a file
         output_file = os.path.join(output_path, f"{os.path.splitext(audio.filename)[0]}_generated.wav")
         torchaudio.save(output_file, gen_audio[0].cpu(), 16000)
-        print(f"Generated audio saved as: {output_file}")
+        logging.info(f"Generated audio saved as: {output_file}")
         return {"message": "Audio generated successfully.", "output_file": output_file}
     else:
         # Serve the generated audio as bytes
