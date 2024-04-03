@@ -1,7 +1,7 @@
 
 # VoiceCraft API Quick Start Guide
 
-The VoiceCraft API is a FastAPI application designed to extend the VoiceCraft text-to-speech (TTS) model with a convenient interface for generating speech audio from text. This guide provides an overview of the API, how to install, run it, and an example of how to use it. It was made for [Pandrator](https://github.com/lukaszliniewicz/Pandrator). 
+The VoiceCraft API is a Windows-compatible FastAPI application designed to extend the VoiceCraft text-to-speech (TTS) model with a convenient interface for generating speech audio from text. This guide provides an overview of the API, how to install, run it, and an example of how to use it. It was made for [Pandrator](https://github.com/lukaszliniewicz/Pandrator). 
 
 ## API Overview
 
