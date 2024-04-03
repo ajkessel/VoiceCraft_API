@@ -1,0 +1,8 @@
+xformers==0.0.22
+tensorboard==2.16.2
+phonemizer==3.2.1
+datasets==2.16.0
+torchmetrics==0.11.1
+fastapi
+uvicorn
+python-multipart

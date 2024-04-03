@@ -10,6 +10,7 @@ from inference_tts_scale import inference_one_sample
 from pydantic import BaseModel
 import io
 from starlette.responses import StreamingResponse
+import getpass
 
 app = FastAPI()
 
@@ -37,8 +38,12 @@ async def generate_audio(
     sample_batch_size: int = Form(4),
     device: str = Form(None)
 ):
-    # Set the 'USER' environment variable
-    os.environ['USER'] = 'PC'
+
+    # Get the current username
+    username = getpass.getuser()
+
+    # Set the USER environment variable to the username
+    os.environ['USER'] = username
 
     # Set the os variable for espeak
     os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = './espeak/libespeak-ng.dll'
