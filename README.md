@@ -77,9 +77,9 @@ print(response.json())
    ```
 7. Install `ffmpeg` as per your OS instructions.
 8. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in your repository to make it compatible with Windows:
-   - Replace `src/audiocraft/audiocraft/utils/cluster.py` with `audiocraft_windows/audiocraft/utils/cluster.py`
-   - Replace `src/audiocraft/audiocraft/environment.py` with `audiocraft_windows/audiocraft/environment.py`
-   - Replace `src/audiocraft/audiocraft/utils/checkpoint.py` with `audiocraft_windows/audiocraft/utils/checkpoint.py`
+   - Replace `src/audiocraft/audiocraft/utils/cluster.py` with `audiocraft_windows/cluster.py`
+   - Replace `src/audiocraft/audiocraft/environment.py` with `audiocraft_windows/environment.py`
+   - Replace `src/audiocraft/audiocraft/utils/checkpoint.py` with `audiocraft_windows/checkpoint.py`
 9. Download the model and the encoder (one of the `.pth` files and the `.th` file) into the `pretrained_models` folder in the repository from [HuggingFace](https://huggingface.co/pyp1/VoiceCraft/tree/main).
 
 ## Additional Notes
