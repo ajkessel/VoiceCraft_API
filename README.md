@@ -7,7 +7,7 @@ The VoiceCraft API is a FastAPI application designed to extend the VoiceCraft te
 
 The API endpoint `/generate` accepts POST requests with several parameters for customizing the TTS generation process:
 
-- **time**: The cut-off time in the audio sample (how much of the sample is to be used for voice cloning, recommended between 3 and 9 (required).
+- **time**: The cut-off time (in seconds) - how much of the sample is to be used for voice cloning, recommended between 3 and 9 (required).
 - **target_text**: The text you wish to generate speech for (required).
 - **audio**: The input audio file in WAV format (should be 16000hz and mono) which will be used to clone the voice (required).
 - **transcript**: The full transcript of the input audio file, named as the wav file (required).
