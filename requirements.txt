@@ -6,3 +6,4 @@ torchmetrics==0.11.1
 fastapi
 uvicorn
 python-multipart
+pydantic
