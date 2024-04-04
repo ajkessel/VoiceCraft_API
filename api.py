@@ -142,16 +142,30 @@ async def generate_audio(
         device = "cpu"
 
     logging.info(f"Using device: {device}")
-
-    # Set up the model and tokenizers
-    voicecraft_name = "giga330M.pth"
-    ckpt_fn = f"./pretrained_models/{voicecraft_name}"
+    
+    # Specify the names of the primary and fallback models
+    primary_model_name = "giga830M.pth"
+    fallback_model_name = "giga330M.pth"
+    model_name = primary_model_name  # Start with the primary model
+    
+    ckpt_fn = f"./pretrained_models/{model_name}"
     encodec_fn = "./pretrained_models/encodec_4cb2048_giga.th"
-    ckpt = torch.load(ckpt_fn, map_location="cpu")
+    
+    # Attempt to load the primary model, fallback to the secondary if it fails
+    try:
+        ckpt = torch.load(ckpt_fn, map_location="cpu")
+    except FileNotFoundError:
+        print(f"Primary model {primary_model_name} not found, falling back to {fallback_model_name}.")
+        ckpt_fn = f"./pretrained_models/{fallback_model_name}"
+        ckpt = torch.load(ckpt_fn, map_location="cpu")
+    
+    # Proceed with the setup using the loaded model
     model = voicecraft.VoiceCraft(ckpt["config"])
     model.load_state_dict(ckpt["model"])
     model.to(device)
     model.eval()
+    
+    # Load tokenizers using the checkpoint information
     phn2num = ckpt['phn2num']
     text_tokenizer = TextTokenizer(backend="espeak")
     audio_tokenizer = AudioTokenizer(signature=encodec_fn, device=device)
