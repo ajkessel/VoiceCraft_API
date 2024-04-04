@@ -8,3 +8,4 @@ uvicorn
 python-multipart
 pydantic
 chardet
+transformers==4.31.0
