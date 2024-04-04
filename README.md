@@ -76,7 +76,7 @@ print(response.json())
    mfa model download acoustic english_us_arpa
    ```
 7. Install `ffmpeg` as per your OS instructions.
-8. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in your repository to make it compatible with Windows:
+8. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in this repository to make it compatible with Windows:
    - Replace `src/audiocraft/audiocraft/utils/cluster.py` with `audiocraft_windows/cluster.py`
    - Replace `src/audiocraft/audiocraft/environment.py` with `audiocraft_windows/environment.py`
    - Replace `src/audiocraft/audiocraft/utils/checkpoint.py` with `audiocraft_windows/checkpoint.py`
