@@ -12,6 +12,7 @@ import io
 from starlette.responses import StreamingResponse
 import getpass
 import logging
+import platform
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
