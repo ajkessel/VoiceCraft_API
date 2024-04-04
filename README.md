@@ -104,7 +104,7 @@ print(response.json())
 - The API automatically performs audio-text alignment if not already performed for the given WAV/TXT pair and prepends the correct portion of the transcript to the prompt. It created a folder for each "voice" with the wav/txt pair and the alignment csv.
 - Users can simply send the text they want to generate, and the rest is handled automatically.
 
-# The original readme: VoiceCraft: Zero-Shot Speech Editing and Text-to-Speech in the Wild
+# The original readme: <br> VoiceCraft: Zero-Shot Speech Editing and Text-to-Speech in the Wild
 [Demo](https://jasonppy.github.io/VoiceCraft_web) [Paper](https://jasonppy.github.io/assets/pdfs/VoiceCraft.pdf)
 
 
