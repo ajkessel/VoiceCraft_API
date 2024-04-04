@@ -56,9 +56,11 @@ async def generate_audio(
     os.environ['USER'] = username
     logging.debug(f"Set USER environment variable to: {username}")
 
-    # Set the os variable for espeak
-    os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = './espeak/libespeak-ng.dll'
-    logging.debug("Set PHONEMIZER_ESPEAK_LIBRARY environment variable")
+    # Check if the operating system is Windows
+    if platform.system() == 'Windows':
+        # Set the environment variable for phonemizer to use a specific espeak library only on Windows
+        os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = './espeak/libespeak-ng.dll'
+        logging.debug("Set PHONEMIZER_ESPEAK_LIBRARY environment variable")
 
     # Create the voice folder
     voice_folder = f"./voices/{os.path.splitext(audio.filename)[0]}"
