@@ -71,21 +71,25 @@ print(response.json())
    ```
    conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
    ```
-7. Install Montreal Forced Aligner
+7. Install the API requirments
+   ```
+   pip install -r requirments.txt
+   ```
+8. Install Montreal Forced Aligner
    ```
    conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=5.5.1068
    ```
-8. Install Montreal Forced Aligner models
+9. Install Montreal Forced Aligner models
    ``` 
    mfa model download dictionary english_us_arpa
    mfa model download acoustic english_us_arpa
    ```
-7. Install `ffmpeg` as per your OS instructions.
-8. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in this repository to make it compatible with Windows:
+10. Install `ffmpeg` as per your OS instructions.
+11. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in this repository to make it compatible with Windows:
    - Replace `src/audiocraft/audiocraft/utils/cluster.py` with `audiocraft_windows/cluster.py`
    - Replace `src/audiocraft/audiocraft/environment.py` with `audiocraft_windows/environment.py`
    - Replace `src/audiocraft/audiocraft/utils/checkpoint.py` with `audiocraft_windows/checkpoint.py`
-9. Download the model and the encoder (one of the `.pth` files and the `.th` file) into the `pretrained_models` folder in the repository from [HuggingFace](https://huggingface.co/pyp1/VoiceCraft/tree/main).
+12. Download the model and the encoder (one of the `.pth` files and the `.th` file) into the `pretrained_models` folder in the repository from [HuggingFace](https://huggingface.co/pyp1/VoiceCraft/tree/main).
 
 ## Additional Notes
 
