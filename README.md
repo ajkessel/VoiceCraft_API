@@ -35,7 +35,7 @@ files = {
 }
 data = {
     'time': 5.0,
-    'target_text': 'Your additional text here.',
+    'target_text': 'The text you want to generate',
     'save_to_file': True,
     'output_path': './generated_audios',
     # Add other form fields as needed
