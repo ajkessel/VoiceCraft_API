@@ -71,9 +71,9 @@ print(response.json())
    ```
    conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
    ```
-7. Install the API requirments
+7. Install the API requirements
    ```
-   pip install -r requirments.txt
+   pip install -r requirements.txt
    ```
 8. Install Montreal Forced Aligner
    ```
