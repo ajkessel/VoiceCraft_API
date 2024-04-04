@@ -67,11 +67,20 @@ print(response.json())
    ```
    pip install -r requirements.txt
    ```
-6. Follow these steps to install VoiceCraft and dependencies:
+6. Install audiocraft:
    ```
    pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
+   ```
+7. Install pytorch etc.
+   ```
    conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
+   ```
+8. Install Montreal Forced Aligner
+   ```
    conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=5.5.1068
+   ```
+9. Install Montreal force aligner models
+   ``` 
    mfa model download dictionary english_us_arpa
    mfa model download acoustic english_us_arpa
    ```
