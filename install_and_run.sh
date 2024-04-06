@@ -5,6 +5,39 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Function to determine the package manager
+get_package_manager() {
+    if command_exists apt-get; then
+        echo "apt-get"
+    elif command_exists yum; then
+        echo "yum"
+    elif command_exists pacman; then
+        echo "pacman"
+    else
+        echo "Unsupported package manager"
+        exit 1
+    fi
+}
+
+# Function to install a package
+install_package() {
+    local package_manager=$1
+    local package=$2
+
+    case $package_manager in
+        apt-get)
+            sudo apt-get update
+            sudo apt-get install -y "$package"
+            ;;
+        yum)
+            sudo yum install -y "$package"
+            ;;
+        pacman)
+            sudo pacman -Syu --noconfirm "$package"
+            ;;
+    esac
+}
+
 # Function to install Conda
 install_conda() {
     # Download the Conda installer
@@ -12,38 +45,17 @@ install_conda() {
 
     # Install Conda
     bash miniconda.sh -b -p $HOME/miniconda
-    
+
     # Add Conda to the PATH
     export PATH="$HOME/miniconda/bin:$PATH"
-    
+
     # Initialize Conda
     conda init
-    
+
     # Cleanup
     rm miniconda.sh
-    
+
     echo "Conda installation completed."
-}
-
-# Function to install Git
-install_git() {
-    sudo apt-get update
-    sudo apt-get install git -y
-    echo "Git installation completed."
-}
-
-# Function to install Espeak
-install_espeak() {
-    sudo apt-get update
-    sudo apt-get install espeak-ng -y
-    echo "Espeak installation completed."
-}
-
-# Function to install FFmpeg
-install_ffmpeg() {
-    sudo apt-get update
-    sudo apt-get install ffmpeg -y
-    echo "FFmpeg installation completed."
 }
 
 # Function to install the VoiceCraft API
@@ -79,8 +91,12 @@ install_voicecraft_api() {
     # Download the model and encoder
     wget -P pretrained_models https://huggingface.co/pyp1/VoiceCraft/resolve/main/encodec_4cb2048_giga.th
     wget -P https://huggingface.co/pyp1/VoiceCraft/resolve/main/gigaHalfLibri330M_TTSEnhanced_max16s.pth
+
     echo "VoiceCraft API installation completed."
 }
+
+# Determine the package manager
+package_manager=$(get_package_manager)
 
 # Check if Conda is installed
 if ! command_exists conda; then
@@ -92,19 +108,19 @@ fi
 # Check if Git is installed
 if ! command_exists git; then
     echo "Git not found. Installing Git..."
-    install_git
+    install_package $package_manager git
 fi
 
 # Check if Espeak is installed
 if ! command_exists espeak-ng; then
     echo "Espeak not found. Installing Espeak..."
-    install_espeak
+    install_package $package_manager espeak-ng
 fi
 
 # Check if FFmpeg is installed
 if ! command_exists ffmpeg; then
     echo "FFmpeg not found. Installing FFmpeg..."
-    install_ffmpeg
+    install_package $package_manager ffmpeg
 fi
 
 # Check if the repo folder exists
