@@ -47,6 +47,29 @@ print(response.json())
 
 ## Installation and Running
 
+### The installation script
+You can use `install_and_run.sh` to install the api and run it later on linux systems.
+
+1. Clone the VoiceCraft API repository:
+   ```
+   git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
+   ```
+2. Change into the repository directory:
+   ```
+   cd VoiceCraft_API
+   ```
+3. Make the script executable
+   ```
+   chmod +x start_and_run.sh
+   ```
+4. Run the script
+   ```
+   sudo ./install_and_run.sh
+   ```
+
+
+### Manial installation
+
 1. Clone the VoiceCraft API repository:
    ```
    git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
