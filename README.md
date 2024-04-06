@@ -48,7 +48,7 @@ print(response.json())
 ## Installation and Running
 
 ### The installation script
-You can use `install_and_run.sh` to install the api and run it later on linux systems.
+You can use `install_and_run.sh` to install the api and run it later on linux systems (it supports various package managers).
 
 1. Clone the VoiceCraft API repository:
    ```
