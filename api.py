@@ -144,7 +144,7 @@ async def generate_audio(
     logging.info(f"Using device: {device}")
     
     # Specify the names of the primary and fallback models
-    primary_model_name = "giga830M.pth"
+    primary_model_name = "gigaHalfLibri330M_TTSEnhanced_max16s.pth"
     fallback_model_name = "giga330M.pth"
     model_name = primary_model_name  # Start with the primary model
     
