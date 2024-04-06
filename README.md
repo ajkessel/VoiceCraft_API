@@ -107,7 +107,7 @@ You can use `install_and_run.sh` to install the api and run it later on linux sy
    mfa model download dictionary english_us_arpa
    mfa model download acoustic english_us_arpa
    ```
-10. Of running on Linuxe, install Espeak NG:
+10. If running on Linux, install Espeak NG:
     ```
     sudo apt-get install espeak-ng
     ```
