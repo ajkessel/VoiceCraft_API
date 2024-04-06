@@ -78,8 +78,7 @@ install_voicecraft_api() {
 
     # Download the model and encoder
     wget -P pretrained_models https://huggingface.co/pyp1/VoiceCraft/resolve/main/encodec_4cb2048_giga.th
-    wget -P pretrained_models https://huggingface.co/pyp1/VoiceCraft/resolve/main/giga830M.pth?download=true
-
+    wget -P https://huggingface.co/pyp1/VoiceCraft/resolve/main/gigaHalfLibri330M_TTSEnhanced_max16s.pth
     echo "VoiceCraft API installation completed."
 }
 
