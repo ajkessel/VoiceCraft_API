@@ -23,7 +23,6 @@ get_package_manager() {
 install_package() {
     local package_manager=$1
     local package=$2
-
     case $package_manager in
         apt-get)
             sudo apt-get update
@@ -42,56 +41,37 @@ install_package() {
 install_conda() {
     # Download the Conda installer
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-
     # Install Conda
     bash miniconda.sh -b -p $HOME/miniconda
-
     # Add Conda to the PATH
     export PATH="$HOME/miniconda/bin:$PATH"
-
     # Initialize Conda
     conda init
-
     # Cleanup
     rm miniconda.sh
-
     echo "Conda installation completed."
 }
 
 # Function to install the VoiceCraft API
 install_voicecraft_api() {
-    # Clone the VoiceCraft API repository
-    git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
-
-    # Change into the repository directory
-    cd VoiceCraft_API
-
     # Create a conda environment named voicecraft_api
     conda create -n voicecraft_api python=3.9.16 -y
-
     # Activate the environment
     source activate voicecraft_api
-
     # Install audiocraft
     pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
-
     # Install PyTorch, etc.
     conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia -y
-
     # Install the API requirements
     pip install -r requirements.txt
-
     # Install Montreal Forced Aligner
     conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=5.5.1068 -y
-
     # Install Montreal Forced Aligner models
     mfa model download dictionary english_us_arpa
     mfa model download acoustic english_us_arpa
-
     # Download the model and encoder
     wget -P pretrained_models https://huggingface.co/pyp1/VoiceCraft/resolve/main/encodec_4cb2048_giga.th
     wget -P pretrained_models https://huggingface.co/pyp1/VoiceCraft/resolve/main/gigaHalfLibri330M_TTSEnhanced_max16s.pth
-
     echo "VoiceCraft API installation completed."
 }
 
@@ -123,13 +103,16 @@ if ! command_exists ffmpeg; then
     install_package $package_manager ffmpeg
 fi
 
-# Check if the repo folder exists
-if [ -d "VoiceCraft_API" ]; then
-    # If the repo folder exists, activate the conda environment and run the API
+# Check if the current directory is the VoiceCraft_API folder
+if [ "${PWD##*/}" != "VoiceCraft_API" ]; then
+    # If not in the VoiceCraft_API folder, clone the repository
+    git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
     cd VoiceCraft_API
-    source activate voicecraft_api
-    python3 api.py
-else
-    # If the repo folder doesn't exist, install the VoiceCraft API
-    install_voicecraft_api
 fi
+
+# Install the VoiceCraft API
+install_voicecraft_api
+
+# Activate the conda environment and run the API
+source activate voicecraft_api
+python3 api.py
