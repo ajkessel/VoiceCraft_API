@@ -26,11 +26,11 @@ app = FastAPI()
 
 class AdditionalArgs(BaseModel):
     top_k: int = 0
-    top_p: float = 0.8
+    top_p: float = 0.9
     temperature: float = 1.0
     stop_repetition: int = 3
     kvcache: int = 1
-    sample_batch_size: int = 4
+    sample_batch_size: int = 1
 
 @app.post("/generate")
 async def generate_audio(
