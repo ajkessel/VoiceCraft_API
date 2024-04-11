@@ -1,7 +1,9 @@
 
 # VoiceCraft API Quick Start Guide
 
-The VoiceCraft API is a Windows-compatible FastAPI application designed to extend the VoiceCraft text-to-speech (TTS) model with a convenient interface for generating speech audio from text. This guide provides an overview of the API, how to install, run it, and an example of how to use it. It was made for [Pandrator](https://github.com/lukaszliniewicz/Pandrator). 
+The VoiceCraft API is supposed to be a user-friendly, eay to install and Windows-compatible FastAPI application designed to extend the VoiceCraft text-to-speech (TTS) model with a convenient interface for generating speech audio from text. It comes with Windows and Linux one-click installers.
+
+This guide provides an overview of the API, how to install, run it, and an example of how to use it. It was made for [Pandrator](https://github.com/lukaszliniewicz/Pandrator). 
 
 ## API Overview
 
@@ -47,17 +49,11 @@ print(response.json())
 
 ## Installation and Running
 
-### The installation script
+### Automatic installation
+#### Linux
 You can use `install_and_run.sh` to install the api and run it later on linux systems (it supports various package managers).
 
-1. Clone the VoiceCraft API repository:
-   ```
-   git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
-   ```
-2. Change into the repository directory:
-   ```
-   cd VoiceCraft_API
-   ```
+1. Download the script from Releases
 3. Make the script executable
    ```
    chmod +x start_and_run.sh
@@ -66,7 +62,11 @@ You can use `install_and_run.sh` to install the api and run it later on linux sy
    ```
    sudo ./install_and_run.sh
    ```
+#### Windows 
 
+1. Download the .exe or .py file from Releases
+2. Open the .exe with administrator priviliges if you want it to install git and ffmpeg automatically, or
+3. Run the .py file from the Windows Terminal
 
 ### Manual installation
 
