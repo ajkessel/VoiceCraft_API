@@ -51,7 +51,7 @@ print(response.json())
 
 ### Automatic installation
 #### Linux
-You can use `install_and_run.sh` to install the api and a well as start it later on linux systems (it supports various package managers).
+You can use `install_and_run.sh` to install the api as well as start it later on linux systems (it supports various package managers).
 
 1. Download the script from Releases
 3. Make the script executable
