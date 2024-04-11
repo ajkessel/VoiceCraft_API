@@ -108,17 +108,13 @@ You can use `install_and_run.sh` to install the api as well as start it later on
    mfa model download dictionary english_us_arpa
    mfa model download acoustic english_us_arpa
    ```
-11. If running on Linux, install Espeak NG:
-    ```
-    sudo apt-get install espeak-ng
-    ```
-10. Install `ffmpeg` as per your OS instructions.
-11. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in this repository to make it compatible with Windows:
+11. Install `ffmpeg` as per your OS instructions.
+12. If running on Windows, after installing `audiocraft`, replace the specified files with those from the `audiocraft_windows` directory in this repository to make it compatible with Windows:
    - Replace `src/audiocraft/audiocraft/utils/cluster.py` with `audiocraft_windows/cluster.py`
    - Replace `src/audiocraft/audiocraft/environment.py` with `audiocraft_windows/environment.py`
    - Replace `src/audiocraft/audiocraft/utils/checkpoint.py` with `audiocraft_windows/checkpoint.py`
-12. Download the model and the encoder (one of the `.pth` files and the `.th` file) into the `pretrained_models` folder in the repository from [HuggingFace](https://huggingface.co/pyp1/VoiceCraft/tree/main).
-13. Run the api (remember to always activate the Conda environment first!):
+13. Download the model and the encoder (one of the `.pth` files and the `.th` file) into the `pretrained_models` folder in the repository from [HuggingFace](https://huggingface.co/pyp1/VoiceCraft/tree/main).
+14. Run the api (remember to always activate the Conda environment first!):
     ```
     python api.py (Windows) or python3 api.py (Linux)
     ```
