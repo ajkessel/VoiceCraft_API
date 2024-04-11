@@ -70,44 +70,45 @@ You can use `install_and_run.sh` to install the api as well as start it later on
 
 ### Manual installation
 
-1. Clone the VoiceCraft API repository:
+1. Make sure that `git`, `ffmpeg`, `miniconda` and `espeak-ng` (if on Linux) are installed.
+2. Clone the VoiceCraft API repository:
    ```
    git clone https://github.com/lukaszliniewicz/VoiceCraft_API.git
    ```
-2. Change into the repository directory:
+3. Change into the repository directory:
    ```
    cd VoiceCraft_API
    ```
-3. Create a conda environment named `voicecraft_api`:
+4. Create a conda environment named `voicecraft_api`:
    ```
    conda create -n voicecraft_api python=3.9.16
    ```
-4. Activate the environment:
+5. Activate the environment:
    ```
    conda activate voicecraft_api
    ```
-5. Install audiocraft:
+6. Install audiocraft:
    ```
    pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
    ```
-6. Install pytorch etc.
+7. Install pytorch etc.
    ```
    conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.7 -c pytorch -c nvidia
    ```
-7. Install the API requirements
+8. Install the API requirements
    ```
    pip install -r requirements.txt
    ```
-8. Install Montreal Forced Aligner
+9. Install Montreal Forced Aligner
    ```
    conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=5.5.1068
    ```
-9. Install Montreal Forced Aligner models
+10. Install Montreal Forced Aligner models
    ``` 
    mfa model download dictionary english_us_arpa
    mfa model download acoustic english_us_arpa
    ```
-10. If running on Linux, install Espeak NG:
+11. If running on Linux, install Espeak NG:
     ```
     sudo apt-get install espeak-ng
     ```
