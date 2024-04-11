@@ -18,6 +18,10 @@ from .modules.transformer import (
 )
 from .codebooks_patterns import DelayedPatternProvider
 
+from argparse import Namespace
+from huggingface_hub import PyTorchModelHubMixin
+
+
 def top_k_top_p_filtering(
     logits, top_k=0, top_p=1.0, filter_value=-float("Inf"), min_tokens_to_keep=1
 ):
@@ -458,6 +462,8 @@ class VoiceCraft(nn.Module):
             before padding.
         """
         x, x_lens, y, y_lens = batch["x"], batch["x_lens"], batch["y"], batch["y_lens"]
+        if len(x) == 0:
+            return None
         x = x[:, :x_lens.max()] # this deal with gradient accumulation, where x_lens.max() might not be longer than the length of the current slice of x
         y = y[:, :, :y_lens.max()]
         assert x.ndim == 2, x.shape
@@ -1408,3 +1414,11 @@ class VoiceCraft(nn.Module):
             flatten_gen = flatten_gen - int(self.args.n_special)
 
         return res, flatten_gen[0].unsqueeze(0)
+    
+
+class VoiceCraftHF(VoiceCraft, PyTorchModelHubMixin):
+    repo_url="https://github.com/jasonppy/VoiceCraft",
+    tags=["Text-to-Speech", "VoiceCraft"]
+    def __init__(self, config: dict):
+        args = Namespace(**config)
+        super().__init__(args)
