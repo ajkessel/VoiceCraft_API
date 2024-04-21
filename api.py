@@ -32,6 +32,17 @@ class AdditionalArgs(BaseModel):
     kvcache: int = 1
     sample_batch_size: int = 1
 
+def get_available_models():
+    models_dir = "./pretrained_models"
+    models = [f for f in os.listdir(models_dir) if f.endswith(".pth")]
+    models.sort()  # Sort the models alphabetically
+    return models
+
+@app.get("/models")
+def get_models():
+    models = get_available_models()
+    return {"models": models}
+
 @app.post("/generate")
 async def generate_audio(
     time: float = Form(...),
@@ -46,7 +57,8 @@ async def generate_audio(
     stop_repetition: int = Form(3),
     kvcache: int = Form(1),
     sample_batch_size: int = Form(4),
-    device: str = Form(None)
+    device: str = Form(None),
+    model_name: str = None
 ):
     logging.info("Received request to generate audio")
 
@@ -142,34 +154,33 @@ async def generate_audio(
         device = "cpu"
 
     logging.info(f"Using device: {device}")
-    
-    # Specify the names of the primary and fallback models
-    primary_model_name = "gigaHalfLibri330M_TTSEnhanced_max16s.pth"
-    fallback_model_name = "giga330M.pth"
-    model_name = primary_model_name  # Start with the primary model
-    
+
+    # If model_name is provided, use it; otherwise, use the first model alphabetically
+    if model_name:
+        model_name = model_name
+    else:
+        available_models = get_available_models()
+        if available_models:
+            model_name = available_models[0]
+        else:
+            logging.error("No models found in the pretrained_models directory.")
+            return {"message": "No models found in the pretrained_models directory."}
+
     ckpt_fn = f"./pretrained_models/{model_name}"
     encodec_fn = "./pretrained_models/encodec_4cb2048_giga.th"
-    
-    # Attempt to load the primary model, fallback to the secondary if it fails
-    try:
-        ckpt = torch.load(ckpt_fn, map_location="cpu")
-    except FileNotFoundError:
-        print(f"Primary model {primary_model_name} not found, falling back to {fallback_model_name}.")
-        ckpt_fn = f"./pretrained_models/{fallback_model_name}"
-        ckpt = torch.load(ckpt_fn, map_location="cpu")
-    
-    # Proceed with the setup using the loaded model
+
+    ckpt = torch.load(ckpt_fn, map_location="cpu")
+
     model = voicecraft.VoiceCraft(ckpt["config"])
     model.load_state_dict(ckpt["model"])
     model.to(device)
     model.eval()
-    
+
     # Load tokenizers using the checkpoint information
     phn2num = ckpt['phn2num']
     text_tokenizer = TextTokenizer(backend="espeak")
     audio_tokenizer = AudioTokenizer(signature=encodec_fn, device=device)
-    
+
     additional_args = AdditionalArgs(
         top_k=top_k,
         top_p=top_p,
@@ -178,7 +189,7 @@ async def generate_audio(
         kvcache=kvcache,
         sample_batch_size=sample_batch_size
     )
-    
+
     decode_config = {
         'top_k': additional_args.top_k,
         'top_p': additional_args.top_p,
