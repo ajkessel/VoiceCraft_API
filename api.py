@@ -180,14 +180,10 @@ async def generate_audio(
 
     logging.info(f"Using device: {device}")
 
-    # If model_name is provided, use it; otherwise, use the first model alphabetically
+    # If model_name is provided, use it; otherwise, raise an error
     if model_name is None:
-        available_models = get_available_models()
-        if available_models:
-            model_name = available_models[0]
-        else:
-            logging.error("No models found in the pretrained_models directory.")
-            return {"message": "No models found in the pretrained_models directory."}
+        logging.error("No model name provided.")
+        return {"message": "No model name provided."}
 
     logging.info(f"Loading model: {model_name}")
     model = get_model(model_name, device)
