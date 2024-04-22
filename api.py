@@ -34,7 +34,7 @@ class AdditionalArgs(BaseModel):
 
 def get_available_models():
     models_dir = "./pretrained_models"
-    models = [f for f in os.listdir(models_dir) if f.endswith(".pth")]
+    models = [f for f in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, f))]
     models.sort()  # Sort the models alphabetically
     return models
 
@@ -42,6 +42,16 @@ def get_available_models():
 def get_models():
     models = get_available_models()
     return {"models": models}
+
+def get_model(model_name, device=None):
+    from models import voicecraft
+    model_dir = f"./pretrained_models/{model_name}"
+    model = voicecraft.VoiceCraft.from_pretrained(model_dir)
+    if device is None:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    model.eval()
+    return model
 
 @app.post("/generate")
 async def generate_audio(
@@ -156,9 +166,7 @@ async def generate_audio(
     logging.info(f"Using device: {device}")
 
     # If model_name is provided, use it; otherwise, use the first model alphabetically
-    if model_name:
-        model_name = model_name
-    else:
+    if model_name is None:
         available_models = get_available_models()
         if available_models:
             model_name = available_models[0]
@@ -166,20 +174,12 @@ async def generate_audio(
             logging.error("No models found in the pretrained_models directory.")
             return {"message": "No models found in the pretrained_models directory."}
 
-    ckpt_fn = f"./pretrained_models/{model_name}"
-    encodec_fn = "./pretrained_models/encodec_4cb2048_giga.th"
+    logging.info(f"Loading model: {model_name}")
+    model = get_model(model_name, device)
 
-    ckpt = torch.load(ckpt_fn, map_location="cpu")
-
-    model = voicecraft.VoiceCraft(ckpt["config"])
-    model.load_state_dict(ckpt["model"])
-    model.to(device)
-    model.eval()
-
-    # Load tokenizers using the checkpoint information
-    phn2num = ckpt['phn2num']
+    # Load tokenizers
     text_tokenizer = TextTokenizer(backend="espeak")
-    audio_tokenizer = AudioTokenizer(signature=encodec_fn, device=device)
+    audio_tokenizer = AudioTokenizer(signature=f"./pretrained_models/encodec_4cb2048_giga.th", device=device)
 
     additional_args = AdditionalArgs(
         top_k=top_k,
@@ -210,16 +210,10 @@ async def generate_audio(
     try:
         # Generate the audio
         concated_audio, gen_audio = inference_one_sample(
-            model, ckpt["config"], phn2num, text_tokenizer, audio_tokenizer,
+            model, model.args, model.args.phn2num, text_tokenizer, audio_tokenizer,
             audio_fn, final_prompt, device, decode_config, prompt_end_frame
         )
         logging.info("Inference completed.")
-    
-        # Empty CUDA cache after inference
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            logging.info("CUDA cache emptied.")
-    
     except Exception as e:
         logging.error(f"Error occurred during inference: {str(e)}")
         return {"message": "An error occurred during audio generation."}
