@@ -13,6 +13,7 @@ from starlette.responses import StreamingResponse
 import getpass
 import logging
 import platform
+from huggingface_hub import hf_hub_download
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
@@ -46,6 +47,20 @@ def get_models():
 def get_model(model_name, device=None):
     from models import voicecraft
     model_dir = f"./pretrained_models/{model_name}"
+    
+    if not os.path.exists(model_dir):
+        # Download the model from Hugging Face if it doesn't exist locally
+        if model_name == "pyp1/VoiceCraft_830M_TTSEnhanced":
+            os.makedirs(model_dir, exist_ok=True)
+            hf_hub_download(repo_id="pyp1/VoiceCraft_830M_TTSEnhanced", filename="config.json", cache_dir=model_dir)
+            hf_hub_download(repo_id="pyp1/VoiceCraft_830M_TTSEnhanced", filename="model.safetensors", cache_dir=model_dir)
+        elif model_name == "pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s":
+            os.makedirs(model_dir, exist_ok=True)
+            hf_hub_download(repo_id="pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s", filename="config.json", cache_dir=model_dir)
+            hf_hub_download(repo_id="pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s", filename="model.safetensors", cache_dir=model_dir)
+        else:
+            raise ValueError(f"Unsupported model: {model_name}")
+    
     model = voicecraft.VoiceCraft.from_pretrained(model_dir)
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
