@@ -214,6 +214,10 @@ async def generate_audio(
             audio_fn, final_prompt, device, decode_config, prompt_end_frame
         )
         logging.info("Inference completed.")
+        # Empty CUDA cache after inference
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            logging.info("CUDA cache emptied.")
     except Exception as e:
         logging.error(f"Error occurred during inference: {str(e)}")
         return {"message": "An error occurred during audio generation."}
