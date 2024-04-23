@@ -14,6 +14,7 @@ import getpass
 import logging
 import platform
 from huggingface_hub import hf_hub_download
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG,
@@ -44,23 +45,62 @@ def get_models():
     models = get_available_models()
     return {"models": models}
 
+def get_latest_snapshot_dir(model_dir):
+    snapshot_dir = os.path.join(model_dir, "snapshots")
+    if not os.path.exists(snapshot_dir):
+        return None
+
+    snapshot_subdirs = [d for d in os.listdir(snapshot_dir) if os.path.isdir(os.path.join(snapshot_dir, d))]
+    if not snapshot_subdirs:
+        return None
+
+    latest_snapshot_subdir = max(snapshot_subdirs, key=lambda x: os.path.getmtime(os.path.join(snapshot_dir, x)))
+    return os.path.join(snapshot_dir, latest_snapshot_subdir)
+
+def get_latest_snapshot_dir(model_dir):
+    snapshot_dir = os.path.join(model_dir, "snapshots")
+    if not os.path.exists(snapshot_dir):
+        return None
+
+    snapshot_subdirs = [d for d in os.listdir(snapshot_dir) if os.path.isdir(os.path.join(snapshot_dir, d))]
+    if not snapshot_subdirs:
+        return None
+
+    latest_snapshot_subdir = max(snapshot_subdirs, key=lambda x: os.path.getmtime(os.path.join(snapshot_dir, x)))
+    return os.path.join(snapshot_dir, latest_snapshot_subdir)
+
 def get_model(model_name, device=None):
-    from models import voicecraft
+    
     model_dir = f"./pretrained_models/{model_name}"
+    config_path = os.path.join(model_dir, "config.json")
+    model_file_path = os.path.join(model_dir, "model.safetensors")
     
     if not os.path.exists(model_dir):
-        # Download the model from Hugging Face if it doesn't exist locally
-        if model_name == "pyp1/VoiceCraft_830M_TTSEnhanced":
-            os.makedirs(model_dir, exist_ok=True)
-            hf_hub_download(repo_id="pyp1/VoiceCraft_830M_TTSEnhanced", filename="config.json", cache_dir=model_dir)
-            hf_hub_download(repo_id="pyp1/VoiceCraft_830M_TTSEnhanced", filename="model.safetensors", cache_dir=model_dir)
-        elif model_name == "pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s":
-            os.makedirs(model_dir, exist_ok=True)
-            hf_hub_download(repo_id="pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s", filename="config.json", cache_dir=model_dir)
-            hf_hub_download(repo_id="pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s", filename="model.safetensors", cache_dir=model_dir)
-        else:
-            raise ValueError(f"Unsupported model: {model_name}")
+        os.makedirs(model_dir)
     
+    try:
+        if not os.path.isfile(config_path) or not os.path.isfile(model_file_path):
+            if model_name == "VoiceCraft_830M_TTSEnhanced":
+                base_url = "https://huggingface.co/pyp1/VoiceCraft_830M_TTSEnhanced/resolve/main/"
+            elif model_name == "VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s":
+                base_url = "https://huggingface.co/pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s/resolve/main/"
+            else:
+                raise ValueError(f"Unsupported model: {model_name}")
+
+            # Download config and model files
+            response = requests.get(f"{base_url}config.json")
+            response.raise_for_status()
+            with open(config_path, 'wb') as f:
+                f.write(response.content)
+
+            response = requests.get(f"{base_url}model.safetensors")
+            response.raise_for_status()
+            with open(model_file_path, 'wb') as f:
+                f.write(response.content)
+    except Exception as e:
+        logging.error(f"Failed to download model '{model_name}': {str(e)}")
+        raise
+
     model = voicecraft.VoiceCraft.from_pretrained(model_dir)
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -83,7 +123,7 @@ async def generate_audio(
     kvcache: int = Form(1),
     sample_batch_size: int = Form(4),
     device: str = Form(None),
-    model_name: str = None
+    model_name: str = Form("")
 ):
     logging.info("Received request to generate audio")
 
