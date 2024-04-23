@@ -182,19 +182,23 @@ def check_voicecraft_server_online(url, max_attempts=30, wait_interval=10):
     return False
 
 def download_pretrained_models(repo_path):
+    """ Download necessary model files into structured directories using curl. """
     pretrained_models_dir = os.path.join(repo_path, 'pretrained_models')
     os.makedirs(pretrained_models_dir, exist_ok=True)
 
-    # Define URLs and paths for the model files
+    # Model specific settings
     model_name = "VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s"
-    base_url = "https://huggingface.co/pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s/resolve/main/"
     model_dir = os.path.join(pretrained_models_dir, model_name)
     os.makedirs(model_dir, exist_ok=True)
 
+    base_url = f"https://huggingface.co/pyp1/{model_name}/resolve/main/"
     config_url = f"{base_url}config.json"
     model_safetensors_url = f"{base_url}model.safetensors"
+    encodec_url = "https://huggingface.co/pyp1/VoiceCraft/resolve/main/encodec_4cb2048_giga.th"
+
     config_path = os.path.join(model_dir, "config.json")
     model_safetensors_path = os.path.join(model_dir, "model.safetensors")
+    encodec_path = os.path.join(pretrained_models_dir, "encodec_4cb2048_giga.th")
 
     # Download config.json using curl
     if not os.path.exists(config_path):
@@ -205,6 +209,11 @@ def download_pretrained_models(repo_path):
     if not os.path.exists(model_safetensors_path):
         logging.info(f"Downloading model.safetensors for {model_name}...")
         run_command(['curl', '-L', model_safetensors_url, '-o', model_safetensors_path])
+
+    # Download encodec model using curl
+    if not os.path.exists(encodec_path):
+        logging.info("Downloading encodec_4cb2048_giga.th...")
+        run_command(['curl', '-L', encodec_url, '-o', encodec_path])
 
 def replace_files(repo_path, file_mappings):
     for src_file, dest_file in file_mappings.items():
