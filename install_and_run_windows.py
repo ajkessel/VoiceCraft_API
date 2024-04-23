@@ -185,33 +185,26 @@ def download_pretrained_models(repo_path):
     pretrained_models_dir = os.path.join(repo_path, 'pretrained_models')
     os.makedirs(pretrained_models_dir, exist_ok=True)
 
-    encodec_url = 'https://huggingface.co/pyp1/VoiceCraft/resolve/main/encodec_4cb2048_giga.th'
-    giga330m_url = 'https://huggingface.co/pyp1/VoiceCraft/resolve/main/gigaHalfLibri330M_TTSEnhanced_max16s.pth'
+    # Define URLs and paths for the model files
+    model_name = "VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s"
+    base_url = "https://huggingface.co/pyp1/VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s/resolve/main/"
+    model_dir = os.path.join(pretrained_models_dir, model_name)
+    os.makedirs(model_dir, exist_ok=True)
 
-    encodec_path = os.path.join(pretrained_models_dir, 'encodec_4cb2048_giga.th')
-    giga330m_path = os.path.join(pretrained_models_dir, 'gigaHalfLibri330M_TTSEnhanced_max16s.pth')
+    config_url = f"{base_url}config.json"
+    model_safetensors_url = f"{base_url}model.safetensors"
+    config_path = os.path.join(model_dir, "config.json")
+    model_safetensors_path = os.path.join(model_dir, "model.safetensors")
 
-    if not os.path.exists(encodec_path):
-        logging.info("Downloading encodec_4cb2048_giga.th...")
-        try:
-            run_command(['curl', '-L', encodec_url, '-o', encodec_path])
-        except subprocess.CalledProcessError as e:
-            logging.error(f"Failed to download encodec_4cb2048_giga.th")
-            logging.error(f"Error message: {str(e)}")
-            raise
-    else:
-        logging.info("encodec_4cb2048_giga.th already exists. Skipping download.")
+    # Download config.json using curl
+    if not os.path.exists(config_path):
+        logging.info(f"Downloading config.json for {model_name}...")
+        run_command(['curl', '-L', config_url, '-o', config_path])
 
-    if not os.path.exists(giga330m_path):
-        logging.info("Downloading gigaHalfLibri330M_TTSEnhanced_max16s.pth...")
-        try:
-            run_command(['curl', '-L', giga330m_url, '-o', giga330m_path])
-        except subprocess.CalledProcessError as e:
-            logging.error(f"Failed to download giga330M.pth")
-            logging.error(f"Error message: {str(e)}")
-            raise
-    else:
-        logging.info("giga330M.pth already exists. Skipping download.")
+    # Download model.safetensors using curl
+    if not os.path.exists(model_safetensors_path):
+        logging.info(f"Downloading model.safetensors for {model_name}...")
+        run_command(['curl', '-L', model_safetensors_url, '-o', model_safetensors_path])
 
 def replace_files(repo_path, file_mappings):
     for src_file, dest_file in file_mappings.items():
