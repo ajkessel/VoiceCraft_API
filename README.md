@@ -41,6 +41,7 @@ data = {
     'target_text': 'The text you want to generate',
     'save_to_file': True,
     'output_path': './generated_audios',
+    `model_name: `VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s`,
     # Add other form fields as needed
 }
 
