@@ -15,7 +15,7 @@ The API endpoint `/generate` accepts POST requests with several parameters for c
 - **transcript**: The full transcript of the input audio file, named as the wav file (required).
 - **save_to_file**: Whether to save the generated audio to a file (default `True`).
 - **output_path**: The directory where the output audio file should be saved (default `.`).
-- **model_name**: The name of the model you wish to use. Either VoiceCraft_830M_TTSEnhanced (larger) or VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s (smaller). The default is the 330M model, and it is the one the installer downloads. 
+- **model_name**: The name of the model you wish to use. Either `VoiceCraft_830M_TTSEnhanced` (larger) or `VoiceCraft_gigaHalfLibri330M_TTSEnhanced_max16s` (smaller). The default is the 330M model, and it is the one the installer downloads. 
 - Additional parameters for fine-tuning the generation (`top_k`, `top_p`, `temperature`, `stop_repetition`, `kvcache`, `sample_batch_size`, `device`).
 
 The response will either be a JSON containing a message and the output file path (if `save_to_file` is `True`) or a streaming response with the generated audio (if `save_to_file` is `False`).
