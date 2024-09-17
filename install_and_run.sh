@@ -105,7 +105,7 @@ install_voicecraft_api() {
     conda create -n voicecraft_api python=3.9.16 -y
 
     # Activate the environment
-    source activate voicecraft_api
+    conda activate voicecraft_api
 
     # Install audiocraft
     pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
